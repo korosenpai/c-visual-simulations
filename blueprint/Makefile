@@ -2,7 +2,7 @@ CC = gcc
 CFLAGS = -g -Wall -Wextra
 LDFLAGS = -lraylib -lm
 
-OUTFILE = default
+OUTFILE = out/default
 
 all:
 	$(CC) $(CFLAGS) -o $(OUTFILE) main.c $(LDFLAGS)

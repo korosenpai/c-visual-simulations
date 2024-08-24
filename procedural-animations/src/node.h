@@ -8,6 +8,6 @@ typedef struct {
     float radius; // only used for drawing
 } Node;
 
-Node node_create(Vector2 position);
+Node node_create(Vector2 position, float radius);
 
-void node_render(Node* node);
+void node_render_skeleton(Node* node);

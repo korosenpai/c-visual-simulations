@@ -1,27 +1,27 @@
 #include "chain.h"
-#include "constants.h"
 #include "node.h"
 
+#include <math.h>
 #include <raylib.h>
 #include <raymath.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-Chain chain_create(int elements, int dist_constraint,Vector2 direction, Vector2 starting_pos) {
+Chain chain_create(const int elements, int dist_constraint,Vector2 direction, Vector2 starting_pos, const float* radiuses) {
     Chain chain = (Chain){
         .dist_constraint = dist_constraint,
         .chain_length = elements,
         .chain_head = malloc(sizeof(Node) * elements),
 
         .direction = Vector2Normalize(direction),
-        .velocity = 5,
-        .max_angle = 90,
+        .velocity = 200,
+        .max_angle = 40,
 
     };
 
     // fill chain
     for (int i = 0; i < elements; i++) {
-        chain.chain_head[i] = node_create(starting_pos);
+        chain.chain_head[i] = node_create(starting_pos, radiuses[i]);
 
         // offset elements on opposite direction of vector direction
         starting_pos.x += dist_constraint * -direction.x;
@@ -41,47 +41,60 @@ void chain_print_debug(Chain* chain) {
     }
 }
 
-void chain_render(Chain *chain) {
+void chain_render_skeleton(Chain *chain) {
     // line looking where chain is headed to
     DrawLine(
-        chain->chain_head->position.x + chain->dist_constraint * chain->direction.x,
-        chain->chain_head->position.y + chain->dist_constraint * chain->direction.y,
+        chain->chain_head->position.x + chain->chain_head->radius * chain->direction.x,
+        chain->chain_head->position.y + chain->chain_head->radius * chain->direction.y,
         chain->chain_head->position.x,
         chain->chain_head->position.y,
         RED 
     );
 
     for (int i = 0; i < chain->chain_length; i++) {
-        node_render(chain->chain_head + i);
+        node_render_skeleton(chain->chain_head + i);
     }
 }
 
+
 void chain_change_direction(Chain* chain, Vector2 target_position) {
-    // // TODO: max angle
-    // https://www.cuemath.com/geometry/angle-between-vectors/
-    //
-    // float angle = Vector2Angle(target_position, chain->direction);
-    // if (angle > chain->max_angle) angle = chain->max_angle;
-    // if (angle < -chain->max_angle) angle = -chain->max_angle;
-
-
+    // change angle instantlty(no smoothing)
     // point to mouse position
     Vector2 direction = Vector2Subtract(target_position, chain->chain_head->position);
-    if (Vector2Length(direction) > chain->dist_constraint)
-        chain->direction = Vector2Normalize(direction);
-    else {
+
+    // if too close to mouse do not move
+    if (Vector2Length(direction) <= chain->dist_constraint) {
+        // NOTE: when stopping, angles with direction give 0
         chain->direction = (Vector2){0};
-    };
+        return;
+    }
+
+    chain->direction = Vector2Normalize(direction);
+
+    // TODO:
+    // // smoothing with max angle to turn
+    // Vector2 direction = Vector2Subtract(target_position, chain->chain_head->position);
+    // float angle = Vector2Angle(direction, chain->direction) * RAD2DEG;
+
+    // if (fabsf(angle) < 10) return;
+    // // if (angle > chain->max_angle) angle = chain->max_angle;
+    // // if (angle < -chain->max_angle) angle = -chain->max_angle;
+    // printf("%f\n", angle);
+    // 
+    // chain->direction = Vector2Rotate(chain->direction, angle * DEG2RAD);
+    // chain->direction = Vector2Normalize(chain->direction);
+
 }
 
-void chain_update(Chain* chain) {
+void chain_update(Chain* chain, float dt) {
+
     // move head
     chain->chain_head->position = Vector2Add(
         chain->chain_head->position,
-        Vector2Scale(chain->direction, chain->velocity)
+        Vector2Scale(chain->direction, chain->velocity * dt)
     );
 
-    // move rest of body
+    // move rest of body to keep up with part of body before
     for (int i = 1; i < chain->chain_length; i++) {
         // direction of node looking at previous node
         Vector2 direction = Vector2Subtract(
