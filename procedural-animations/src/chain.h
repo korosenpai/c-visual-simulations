@@ -11,7 +11,9 @@ typedef struct {
     int chain_length; // how many elements in chain
     Node* chain_head; // array of nodes
 
-    Vector2 direction; // must be a normalized vector
+    // directions must be normalized
+    Vector2 current_direction; // used only when moving
+    Vector2 direction; // when current_dir = 0 to maintain it to a value != 0 for the animations to keep working
     float velocity;
     float max_angle; // max angle it can turn at once
 

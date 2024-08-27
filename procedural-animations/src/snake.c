@@ -21,15 +21,15 @@ Snake snake_create(int snake_body_size, float* snake_body_array, Chain* chain) {
 
 
 // from snake, points are in a anticlockwise fashion
-void draw_polygon(int array_size, Vector2* vertex_array, Color body, Color border) {
+void draw_polygon(int array_size, Vector2* vertex_array, Color body, Color border, int border_size) {
     for (int i = 0; i < (array_size - 2) / 2; i++) {
         DrawTriangle(vertex_array[array_size - 1 - i], vertex_array[1 + i], vertex_array[i], body);
         DrawTriangle(vertex_array[array_size - 1 - i], vertex_array[array_size - 2 - i], vertex_array[1 + i], body);
 
         // borders
         // TODO: make it ease
-        DrawLineEx(vertex_array[i], vertex_array[i + 1], 5, border);
-        DrawLineEx(vertex_array[array_size - 1 - i], vertex_array[array_size - 2 - i], 5, border);
+        DrawLineEx(vertex_array[i], vertex_array[i + 1], border_size, border);
+        DrawLineEx(vertex_array[array_size - 1 - i], vertex_array[array_size - 2 - i], border_size, border);
     }
 }
 
@@ -46,6 +46,7 @@ void snake_render(Snake* snake) {
 
     Color border_color = WHITE;
     Color body_color = BLUE;
+    int border_size = 3;
 
     // two points of whole body_color
     Node* node;
@@ -58,22 +59,27 @@ void snake_render(Snake* snake) {
         // two points on borders of screen
         Vector2 rotated_90_deg = Vector2Rotate(direction, PI / 2);
         Vector2 new_dir = Vector2Add(node->position, Vector2Scale(rotated_90_deg, node->radius));
-        // DrawCircleV(new_dir, 5, RED);
+        // DrawCircleV(new_dir, 5 + i, RED);
         vertices[i] = new_dir;
 
         rotated_90_deg = Vector2Rotate(direction, -PI / 2);
         new_dir = Vector2Add(node->position, Vector2Scale(rotated_90_deg, node->radius));
-        // DrawCircleV(new_dir, 5, GREEN);
+        // DrawCircleV(new_dir, 5 + i, GREEN);
         vertices[n_vertices - i - 1] = new_dir;
     }
 
-    // tail
-    DrawCircleV(node->position, node->radius + 5, border_color);
-    DrawCircleV(node->position, node->radius, body_color);
+
+    draw_polygon(n_vertices, vertices, body_color, border_color, border_size);
 
     // draw head
-    DrawCircleV(chain_head->position, chain_head->radius + 5, border_color);
-    DrawCircleV(chain_head->position, chain_head->radius, body_color);
+    // angle from x axis
+    float head_angle = Vector2Angle(chain->direction, (Vector2){1, 0}) * RAD2DEG;
+    DrawCircleSector(chain_head->position, chain_head->radius + border_size, -head_angle-90, -head_angle+90, 100, border_color);
+    DrawCircleSector(chain_head->position, chain_head->radius, -head_angle-90, -head_angle+90, 100, body_color); // in degrees
 
-    draw_polygon(n_vertices, vertices, body_color, border_color);
+    // draw tail
+    float tail_angle = Vector2Angle(direction, (Vector2){1, 0}) * RAD2DEG;
+    DrawCircleSector(node->position, node->radius + border_size, -tail_angle+90, -tail_angle+270, 100, border_color);
+    DrawCircleSector(node->position, node->radius, -tail_angle+90, -tail_angle+270, 100, body_color);
+
 }

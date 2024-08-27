@@ -62,14 +62,18 @@ void chain_change_direction(Chain* chain, Vector2 target_position) {
     // point to mouse position
     Vector2 direction = Vector2Subtract(target_position, chain->chain_head->position);
 
+    // update direction when current_dir is not 0
+    if (Vector2Length(direction) > chain->dist_constraint) {
+        chain->direction = chain->current_direction;
+    }
     // if too close to mouse do not move
-    if (Vector2Length(direction) <= chain->dist_constraint) {
+    else {
         // NOTE: when stopping, angles with direction give 0
-        chain->direction = (Vector2){0};
+        chain->current_direction = (Vector2){0};
         return;
     }
 
-    chain->direction = Vector2Normalize(direction);
+    chain->current_direction = Vector2Normalize(direction);
 
     // TODO:
     // // smoothing with max angle to turn
@@ -88,16 +92,18 @@ void chain_change_direction(Chain* chain, Vector2 target_position) {
 
 void chain_update(Chain* chain, float dt) {
 
+    Vector2 direction = chain->current_direction;
+
     // move head
     chain->chain_head->position = Vector2Add(
         chain->chain_head->position,
-        Vector2Scale(chain->direction, chain->velocity * dt)
+        Vector2Scale(direction, chain->velocity * dt)
     );
 
     // move rest of body to keep up with part of body before
     for (int i = 1; i < chain->chain_length; i++) {
         // direction of node looking at previous node
-        Vector2 direction = Vector2Subtract(
+        direction = Vector2Subtract(
             (chain->chain_head + i - 1)->position, // position of precedent elem
             (chain->chain_head + i)->position
         );
