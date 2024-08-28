@@ -1,12 +1,25 @@
 #include "snake.h"
 #include "chain.h"
-#include <stdio.h>
 #include <stdlib.h>
 #include <raylib.h>
 #include <raymath.h>
 
-// max number of vertices to draw on singular node
-const int snake_vertices_per_node = 8;
+
+// float snake_body_function(int x) {
+//     return -pow((float)x/2-1, 2) + 1;
+// } 
+// 
+// float* snake_create_sizes(int len, int starting_size) {
+//     float* snake_body_array_radiuses = malloc(sizeof(float) * len);
+// 
+//     for (int i = 0; i < len; i++) {
+//         float body_modifier = snake_body_function(i);
+//         snake_body_array_radiuses[i] = fmin(starting_size + body_modifier, 0);
+//         printf("%d-%f\n", i, snake_body_array_radiuses[i]);
+//     }
+//     
+//     return snake_body_array_radiuses;
+// }
 
 Snake snake_create(int snake_body_size, float* snake_body_array, Chain* chain) {
 
@@ -46,7 +59,7 @@ void snake_render(Snake* snake) {
 
     Color border_color = WHITE;
     Color body_color = BLUE;
-    int border_size = 3;
+    float border_size = 3;
 
     // two points of whole body_color
     Node* node;
@@ -70,16 +83,17 @@ void snake_render(Snake* snake) {
 
 
     draw_polygon(n_vertices, vertices, body_color, border_color, border_size);
+    free(vertices);
 
     // draw head
     // angle from x axis
     float head_angle = Vector2Angle(chain->direction, (Vector2){1, 0}) * RAD2DEG;
-    DrawCircleSector(chain_head->position, chain_head->radius + border_size, -head_angle-90, -head_angle+90, 100, border_color);
-    DrawCircleSector(chain_head->position, chain_head->radius, -head_angle-90, -head_angle+90, 100, body_color); // in degrees
+    DrawCircleSector(chain_head->position, chain_head->radius + border_size / 2, -head_angle-90, -head_angle+90, 100, border_color);
+    DrawCircleSector(chain_head->position, chain_head->radius - border_size / 2, -head_angle-90, -head_angle+90, 100, body_color); // in degrees
 
     // draw tail
     float tail_angle = Vector2Angle(direction, (Vector2){1, 0}) * RAD2DEG;
-    DrawCircleSector(node->position, node->radius + border_size, -tail_angle+90, -tail_angle+270, 100, border_color);
-    DrawCircleSector(node->position, node->radius, -tail_angle+90, -tail_angle+270, 100, body_color);
+    DrawCircleSector(node->position, node->radius + border_size / 2, -tail_angle+90, -tail_angle+270, 100, border_color);
+    DrawCircleSector(node->position, node->radius - border_size / 2, -tail_angle+90, -tail_angle+270, 100, body_color);
 
 }

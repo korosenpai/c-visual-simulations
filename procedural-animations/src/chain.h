@@ -28,5 +28,4 @@ void chain_print_debug(Chain* chain);
 void chain_render_skeleton(Chain* chain);
 
 void chain_change_direction(Chain* chain, Vector2 target_direction);
-void chain_untangle(Chain* chain); // if some angles in the chain are too big or small, make them go in the middle
 void chain_update(Chain* chain, float dt);

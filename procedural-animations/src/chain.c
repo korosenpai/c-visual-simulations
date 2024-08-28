@@ -56,6 +56,10 @@ void chain_render_skeleton(Chain *chain) {
     }
 }
 
+// if some angles in the chain are too big or small, make them go in the middle
+void chain_untangle(Chain* chain) {
+
+}
 
 void chain_change_direction(Chain* chain, Vector2 target_position) {
     // change angle instantlty(no smoothing)
@@ -91,6 +95,8 @@ void chain_change_direction(Chain* chain, Vector2 target_position) {
 }
 
 void chain_update(Chain* chain, float dt) {
+
+    chain_untangle(chain);
 
     Vector2 direction = chain->current_direction;
 

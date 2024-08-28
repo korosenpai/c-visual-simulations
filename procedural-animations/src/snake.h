@@ -10,11 +10,16 @@ typedef struct {
     float* SNAKE_BODY_ARRAY_RADIUSES;
     Chain* chain;
 
-    Vector2 left_eye_pos;
-    Vector2 right_eye_pos;
+    // TODO: 
+    int body_n_vertices;
+    Vector2* body_vertices;
+
 } Snake;
 
+float* snake_create_sizes(int len, int starting_size); // to create snake_body_array
 Snake snake_create(int snake_body_size, float* snake_body_array, Chain* chain);
+
+void snake_vertices_update(Snake* snake);
 
 void snake_render(Snake* snake);
 
