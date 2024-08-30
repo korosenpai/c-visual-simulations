@@ -10,18 +10,17 @@ typedef struct {
     float* SNAKE_BODY_ARRAY_RADIUSES;
     Chain* chain;
 
-    // TODO: 
-    int body_n_vertices;
-    Vector2* body_vertices;
-
+    Color border_color;
+    Color body_color;
+    float border_size;
 } Snake;
 
-float* snake_create_sizes(int len, int starting_size); // to create snake_body_array
+// float* snake_create_sizes(int len, int starting_size); // to create snake_body_array
 Snake snake_create(int snake_body_size, float* snake_body_array, Chain* chain);
 
-void snake_vertices_update(Snake* snake);
 
-void snake_render(Snake* snake);
+void snake_render_body_border(Snake* snake);
+void snake_render_body(Snake* snake);
 
 // for when to create snake of bigger size
 // float* create_snake_array();

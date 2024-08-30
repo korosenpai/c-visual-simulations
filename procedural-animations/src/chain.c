@@ -17,6 +17,9 @@ Chain chain_create(const int elements, int dist_constraint,Vector2 direction, Ve
         .velocity = 200,
         .max_angle = 40,
 
+        .n_border_vertices = elements * 2,
+        .border_vertices = malloc(sizeof(Vector2) * elements * 2),
+
     };
 
     // fill chain
@@ -32,6 +35,7 @@ Chain chain_create(const int elements, int dist_constraint,Vector2 direction, Ve
 
 void chain_destroy(Chain* chain) {
     free(chain->chain_head);
+    free(chain->border_vertices);
 }
 
 void chain_print_debug(Chain* chain) {
@@ -53,6 +57,32 @@ void chain_render_skeleton(Chain *chain) {
 
     for (int i = 0; i < chain->chain_length; i++) {
         node_render_skeleton(chain->chain_head + i);
+    }
+}
+
+// NOTE: assumes n_border_vertices = chain length * 2
+void chain_update_border_vertices(Chain* chain) {
+
+    Vector2 direction;
+
+    // two points of whole body_color
+    Node* node;
+    for (int i = 0; i < chain->chain_length; i++) {
+        node = chain->chain_head + i;
+
+        if (i == 0) direction = chain->direction; // head already has direction
+        else direction = Vector2Normalize(Vector2Subtract((node - 1)->position, node->position)); // direction looking at previous node in chain
+
+        // two points on borders of screen
+        Vector2 rotated_90_deg = Vector2Rotate(direction, PI / 2);
+        Vector2 new_dir = Vector2Add(node->position, Vector2Scale(rotated_90_deg, node->radius));
+        // DrawCircleV(new_dir, 5 + i, RED);
+        chain->border_vertices[i] = new_dir;
+
+        rotated_90_deg = Vector2Rotate(direction, -PI / 2);
+        new_dir = Vector2Add(node->position, Vector2Scale(rotated_90_deg, node->radius));
+        // DrawCircleV(new_dir, 5 + i, GREEN);
+        chain->border_vertices[chain->n_border_vertices- i - 1] = new_dir;
     }
 }
 
@@ -122,4 +152,10 @@ void chain_update(Chain* chain, float dt) {
 
         (chain->chain_head + i)->position = Vector2Add((chain->chain_head + i)->position, direction);
     }
+
+}
+
+Vector2 chain_get_direction(Chain* chain, int node_pos) {
+    Node* node = chain->chain_head + node_pos;
+    return Vector2Normalize(Vector2Subtract((node - 1)->position, node->position)); // direction looking at previous node in chain
 }

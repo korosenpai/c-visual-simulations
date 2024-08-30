@@ -17,6 +17,10 @@ typedef struct {
     float velocity;
     float max_angle; // max angle it can turn at once
 
+    // points to render body
+    int n_border_vertices;
+    Vector2* border_vertices;
+
 } Chain;
 
 // returns head of chain
@@ -27,5 +31,9 @@ void chain_print_debug(Chain* chain);
 
 void chain_render_skeleton(Chain* chain);
 
+void chain_update_border_vertices(Chain* chain);
 void chain_change_direction(Chain* chain, Vector2 target_direction);
 void chain_update(Chain* chain, float dt);
+
+// get direction node in nth position (0 indexed) of chain is facing
+Vector2 chain_get_direction(Chain* chain, int node_pos);
