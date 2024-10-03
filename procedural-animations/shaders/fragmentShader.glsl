@@ -21,16 +21,13 @@ vec3 palette(float t) {
 }
 
 void main() {
-    // gl_FragCoord range: 0...resolution
     // clip space: -1...1
 
     vec2 uv = gl_FragCoord.xy / resolution; // range 0...1
     uv -= 0.5; // -0.5...0.5
     uv *= 2.0; // -1...1 so 0,0 is center of canves
-    // fragColor = vec4(uv, 0, 1); // mango
 
     // fix aspect ratio, so it doesnt steetch on x
-    // if canvas wasnt square with this the sketch is not stretched
     uv.x *= resolution.x / resolution.y;
 
     // will be not changed to maintain knowledge of
@@ -79,28 +76,11 @@ void main() {
         // make center of circle white
         d = abs(d);
 
-        // step(float val, float x): return 0(black) if x < val; else 1(white)
-        // everything less than 0.1 is black, else white
-        // very cutty circle
-        // d = step(0.1, d);
-
-
-        // smothstep (float val, float val2, float x)
-        // black when x < val, white when x > val2, and smooths the jump
-        // more smooth circle
-        // d = smoothstep(0.0, 0.1, d);
-
-        // neon effect is easy with inverse function
-        // scale inverse function down to be seen in clip space
-        // smaller the less glow
-        // d = 0.01 / d;
-
         // same as inverse function
         // 0..1 -> darker colors go closer to 0 (lesser effects on light colors)
         d = pow(0.01 / d, 1.2);
 
         // add colors
-        // col *= d;
         finalColor += col * d;
     }
 

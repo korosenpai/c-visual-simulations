@@ -1,4 +1,5 @@
-# visual simulations using shaders
+# visual simulations
 
 ## TODO
-- mandelbrot set
+- double pendulum
+- particle system
