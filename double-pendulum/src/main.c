@@ -22,7 +22,7 @@ int main(void) {
 
     for (float i = 0; i < dps_count; i++) {
         dps[(int)i] = dp_create(
-            SCREEN_WIDTH / 2, 200, 100, 100, 10, 10, PI * 0.99 + i / 10000, PI * 0.99
+            SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 200, 200, 20, 20, PI * 0.99 + i / 10000, PI * 0.99
         );
     }
 

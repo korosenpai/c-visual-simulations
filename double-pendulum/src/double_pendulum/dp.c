@@ -2,6 +2,8 @@
 #include <math.h>
 #include <raylib.h>
 #include <raymath.h>
+#include <stdio.h>
+#include "../colors/col.h"
 
 
 doublePendulum dp_create(
@@ -24,6 +26,13 @@ doublePendulum dp_create(
 
         .a1_v = 0,
         .a2_v = 0,
+
+        .color = (Color){
+            .r = GetRandomValue(100, 255),
+            .g = GetRandomValue(100, 255),
+            .b = GetRandomValue(100, 255),
+            .a = 255
+        },
 
     };
 
@@ -72,10 +81,11 @@ void dp_update(doublePendulum* dp, float* deltat) {
 
 
 void dp_render(doublePendulum* dp) {
+    col_shift_hue(&dp->color, PI / 3);
 
-    DrawLineEx(dp->pendulum_origin, dp->p1, 5, WHITE);
-    DrawCircleV(dp->p1, 5, RED);
+    DrawLineEx(dp->pendulum_origin, dp->p1, 7, dp->color);
+    DrawLineEx(dp->p1, dp->p2, 7, dp->color);
 
-    DrawLineEx(dp->p1, dp->p2, 5, BLUE);
-    DrawCircleV(dp->p2, 5, RED);
+    DrawCircleV(dp->p1, 4, WHITE);
+    DrawCircleV(dp->p2, 4, WHITE);
 }

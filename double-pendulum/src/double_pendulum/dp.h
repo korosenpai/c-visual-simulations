@@ -27,7 +27,11 @@ typedef struct {
     float a1_v;
     float a2_v;
 
+    Color color;
+
 } doublePendulum;
+
+
 
 doublePendulum dp_create(
     float x, float y, float r1, float r2, float m1, float m2, float theta1, float theta2
